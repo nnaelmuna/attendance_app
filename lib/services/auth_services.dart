@@ -1,33 +1,65 @@
-import 'package:flutter/material.dart';
+// file ini yang meng handle login n register
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
-class AuthTextField extends StatelessWidget {
-final TextEditingController controller;
-final String label;
-final IconData icon;
-final bool obscureText;
-final Widget? suffixIcon;
-final TextInputType keyboardType;
-final String ? Function(String?)? validator;
+class AuthServices {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  const AuthTextField({super.key, required this.controller, required this.label, required this.icon, this.suffixIcon, required this.keyboardType, this.validator, required this.obscureText});
+  AuthServices() {
+    if (!kIsWeb) { // only for android or ios => bukan utk web
+      FirebaseAuth.instance.setSettings(
+        // Memastikan kalo kita bukan robot -> captcha
+        appVerificationDisabledForTesting: true,
+        forceRecaptchaFlow: false,
+        
+      );
+    }
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon,color: Colors.blue[600],),
-        suffixIcon: suffixIcon,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12)
-        ),
-        filled: true,
-        fillColor: Colors.grey[50],
-      ),
-      validator: validator,
-    );
+  // Get current user -> welcome!
+  User? get currentUser => _auth.currentUser;
+
+  // Auth state changes stream -> pertama buka disuru login, tapi abis itu ngga lg, krn udh nyimpen statenya
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
+
+  //sign in with email and password tipe data: future function :SWRAP parameter: yg didalemnya
+  Future<UserCredential> signInWithEmailAndPassword(String email, String password) async{
+    // async => buat ngecek emailnya tu udah ada di database apa belum
+    try {
+      // kalo succes masuk ke database
+      return await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password
+      );
+    } catch (e) {
+      // kalo error
+      rethrow; // halaman login or register dimunculkan lagi
+    }
+  }
+
+  // Register with email and password
+  Future<UserCredential> registerWithEmailAndPassword(String email, String password) async {
+    try {
+      return await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password
+      );
+    } catch (e) {
+      if (e is FirebaseAuthException)  { //kalo error berasal dr firebase
+        if (e.code == 'operation-not-allowed') {
+          throw 'Email/Password sign up is not enable. Please enable on firebase console';
+        }
+      }
+      rethrow;
+    }
+  }
+
+  // Sign out
+  Future<void> signOut () async {
+    try {
+      await _auth.signOut();
+    } catch (e) {
+      rethrow;
+    }
   }
 }
