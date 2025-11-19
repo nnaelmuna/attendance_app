@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // ini harus di representasikan di main.dart => google-services.
   await Firebase.initializeApp(
     options: FirebaseOptions(
-      apiKey: "AIzaSyCn6BPXNwN8vsUlHgnNGhSW3mRIDYjDBkk",
-      appId: "1:261263919822:android:86a8dfe8dd6ddae8e1de9f",
-      messagingSenderId: "261263919822",
-      projectId: "attendance-app-975c1",
+      apiKey: "AIzaSyATbCpFtSacQo8bVclo5uiCELUCGoqnFDU",
+      appId: "1:39386372643:android:ca169861ed2776ec01af96",
+      messagingSenderId: "39386372643",
+      projectId: "attendance-app-39ca8",
     ),
   );
   runApp(AttendanceApp());
