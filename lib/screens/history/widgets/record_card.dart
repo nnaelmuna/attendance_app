@@ -19,9 +19,9 @@ class RecordCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(context, isComplete),
+             _buildHeader(context, isComplete),
             Divider(height: 24),
-            _buildTimeInfo(isComplete),
+             _buildTimeInfo(isComplete),
             if (record.checkInPhotoPath != null || record.checkOutPhotoPath != null)
               _buildPhotos(),
             if (record.notes != null && record.notes!.isEmpty)
